@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Initial noise and signal in DSD</title>
+  <title>Initial noise and signal in DSD</title>
 </head>
 <body>
 
 <div>
-<input type="number" id="freq" name="freq" list="freqs" min="256" max="26880" step="256"
-  value="19200" onchange="drawDSD()"/>
-<label for="freq">Hz</label>
+  <input type="number" id="freq" name="freq" list="freqs" min="256" max="26880" step="256"
+    value="19200" onchange="drawDSD()"/>
+  <label for="freq">Hz</label>
 </div>
-
 <hr />
 <canvas id="theCanvas" style="border:1px solid #808080;"></canvas>
+<hr />
+<p>
+  <a href="https://github.com/plstonge/dsd-noise-and-signal">GitHub repository</a>
+</p>
 
 <script>
 const height = 512
