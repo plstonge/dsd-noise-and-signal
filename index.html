@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Initial noise and signal in DSD</title>
+</head>
+<body>
+
+<div>
+<input type="number" id="freq" name="freq" list="freqs" min="256" max="26880" step="256"
+  value="19200" onchange="drawDSD()"/>
+<label for="freq">Hz</label>
+</div>
+
+<hr />
+<canvas id="theCanvas" style="border:1px solid #808080;"></canvas>
+
+<script>
+const height = 512
+const width = 1200
+const margin = 24
+const dsd_freq = 64 * 44100
+
+const theCanvas = document.getElementById("theCanvas");
+theCanvas.height = height
+theCanvas.width = width
+
+function drawDSD() {
+  const freq = document.getElementById("freq").value
+  const ctx = theCanvas.getContext("2d");
+  const imageData = ctx.getImageData(0, 0, width, height)
+
+  for (let i = 0; i < height; i++) {
+    let r = (i < height / 2 ? i : i - height / 2)
+    let g = (i < height / 2 ? 0 : 255)
+    let b = (i < height / 2 ? i : i - height / 2)
+
+    for (let j = 0; j < margin; j++) {
+      imageData.data[(i * width + j) * 4 + 0] = r
+      imageData.data[(i * width + j) * 4 + 1] = g
+      imageData.data[(i * width + j) * 4 + 2] = b
+      imageData.data[(i * width + j) * 4 + 3] = 255
+    }
+
+    let sigma = (2 * i - height + 1) / height
+
+    for (let j = margin; j < width; j++) {
+      let x_25 = j - margin + 0.0 / 2
+      let x_50 = j - margin + 1.0 / 2
+      let x_75 = j - margin + 2.0 / 2
+
+      let y_25 = Math.sin(2 * Math.PI * freq * x_25 / dsd_freq)
+      let y_50 = Math.sin(2 * Math.PI * freq * x_50 / dsd_freq)
+      let y_75 = Math.sin(2 * Math.PI * freq * x_75 / dsd_freq)
+
+      sigma += (y_25 + 2 * y_50 + y_75) / 4
+
+      let bit = (sigma >= 0 ? 1 : -1)
+      sigma -= bit
+
+      let v = Math.floor(127.5 * (1.0 + bit))
+      imageData.data[(i * width + j) * 4 + 0] = v
+      imageData.data[(i * width + j) * 4 + 1] = v
+      imageData.data[(i * width + j) * 4 + 2] = v
+      imageData.data[(i * width + j) * 4 + 3] = 255
+    }
+  }
+  ctx.putImageData(imageData, 0, 0)
+}
+
+drawDSD()
+</script>
+
+</body>
+</html>
