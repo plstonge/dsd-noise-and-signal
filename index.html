@@ -8,7 +8,10 @@
 <div>
   <input type="number" id="freq" name="freq" list="freqs" min="256" max="26880" step="256"
     value="19200" onchange="drawDSD()"/>
-  <label for="freq">Hz</label>
+  <label for="freq">Hz,</label>
+  <input type="number" id="noise" name="noise" list="n_levels" min="0" max="100" step="1"
+    value="0" onchange="drawDSD()"/>
+  <label for="noise">units of noise</label>
 </div>
 <hr />
 <canvas id="theCanvas" style="border:1px solid #808080;"></canvas>
@@ -29,6 +32,7 @@ theCanvas.width = width
 
 function drawDSD() {
   const freq = document.getElementById("freq").value
+  const noise_level = document.getElementById("noise").value
   const ctx = theCanvas.getContext("2d");
   const imageData = ctx.getImageData(0, 0, width, height)
 
@@ -55,7 +59,8 @@ function drawDSD() {
       let y_50 = Math.sin(2 * Math.PI * freq * x_50 / dsd_freq)
       let y_75 = Math.sin(2 * Math.PI * freq * x_75 / dsd_freq)
 
-      sigma += (y_25 + 2 * y_50 + y_75) / 4
+      let noise = noise_level * (Math.random() + Math.random() + Math.random() + Math.random() - 2.0) / 200
+      sigma += noise + (y_25 + 2 * y_50 + y_75) / 4
 
       let bit = (sigma >= 0 ? 1 : -1)
       sigma -= bit
